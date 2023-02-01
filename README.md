@@ -8,6 +8,7 @@ To set up your build directory:
 	$ cd <path/to/sponge>/build
 	$ cmake ..
 
+
 **Note:** all further commands listed below should be run from the `build` dir.
 
 To build:
