@@ -22,7 +22,6 @@ class ByteStream {
     size_t _capacity;
     size_t _written_cnt;
     size_t _read_cnt;
-    int _head, _tail;
     bool _input_ended_flag = false;
     bool _error = false;
 

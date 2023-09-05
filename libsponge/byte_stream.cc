@@ -1,8 +1,7 @@
 #include "byte_stream.hh"
 
 // Constructor
-ByteStream::ByteStream(const size_t capacity)
-    : _buffer(), _capacity(capacity), _written_cnt(0), _read_cnt(0), _head(0), _tail(0) {}
+ByteStream::ByteStream(const size_t capacity) : _buffer(), _capacity(capacity), _written_cnt(0), _read_cnt(0) {}
 
 size_t ByteStream::write(const std::string &data) {
     size_t len = std::min(data.size(), remaining_capacity());
