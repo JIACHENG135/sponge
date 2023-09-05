@@ -16,9 +16,21 @@ void get_URL(const string &host, const string &path) {
     // Then you'll need to print out everything the server sends back,
     // (not just one call to read() -- everything) until you reach
     // the "eof" (end of file).
-
-    cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
-    cerr << "Warning: get_URL() has not been implemented yet.\n";
+    auto sc = TCPSocket();
+    auto addr = Address(host, "http");
+    sc.connect(addr);
+    sc.write("GET ");
+    sc.write(path);
+    sc.write(" HTTP/1.1\r\n");
+    sc.write("HOST: ");
+    sc.write(host);
+    sc.write("\r\n");
+    sc.write("Connection: close\r\n\r\n");
+    sc.shutdown(SHUT_WR);
+    while (!sc.eof()) {
+        printf("%s", sc.read().c_str());
+    }
+    sc.close();
 }
 
 int main(int argc, char *argv[]) {
