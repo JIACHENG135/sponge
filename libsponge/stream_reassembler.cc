@@ -29,7 +29,7 @@ StreamReassembler::StreamReassembler(const size_t capacity)
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const uint64_t index, const bool eof) {
     auto st = max(static_cast<size_t>(index), _cur_index);
-    auto ed = min(static_cast<size_t>(index) + data.size(), min(_cur_index + _output.buffer_size(), _eof_index));
+    auto ed = min(static_cast<size_t>(index) + data.size(), min(_cur_index + _output.remaining_capacity(), _eof_index));
     if (eof)
         _eof_index = min(_eof_index, static_cast<size_t>(index) + data.size());
     for (size_t i = st, j = st - index; i < ed; i++, j++) {
@@ -41,7 +41,7 @@ void StreamReassembler::push_substring(const string &data, const uint64_t index,
         }
     }
     string res;
-    while (_cur_index < _eof_index && _stream[_cur_index].second == true) {
+    while (_cur_index < _eof_index && _stream[_cur_index % _capacity].second == true) {
         res.push_back(_stream[_cur_index % _capacity].first);
         _stream[_cur_index % _capacity] = {0, false};
         ++_cur_index;
