@@ -6,17 +6,14 @@
 // automated checks run by `make check_lab2`.
 
 template <typename... Targs>
-void DUMMY_CODE(Targs &&... /* unused */) {}
+void DUMMY_CODE(Targs &&.../* unused */) {}
 
 using namespace std;
 
 //! Transform an "absolute" 64-bit sequence number (zero-indexed) into a WrappingInt32
 //! \param n The input absolute 64-bit sequence number
 //! \param isn The initial sequence number
-WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
-    DUMMY_CODE(n, isn);
-    return WrappingInt32{0};
-}
+WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) { return isn + n; }
 
 //! Transform a WrappingInt32 into an "absolute" 64-bit sequence number (zero-indexed)
 //! \param n The relative sequence number
@@ -29,6 +26,15 @@ WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
 //! and the other stream runs from the remote TCPSender to the local TCPReceiver and
 //! has a different ISN.
 uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
-    DUMMY_CODE(n, isn, checkpoint);
-    return {};
+    auto low32bit = static_cast<uint64_t>(n.raw_value() - isn.raw_value());
+    auto high32bit1 = (checkpoint + (1ull << 31)) & 0xFFFFFFFF00000000;
+    auto high32bit2 = (checkpoint - (1ull << 31)) & 0xFFFFFFFF00000000;
+
+    uint64_t num1 = high32bit1 | low32bit;
+    uint64_t num2 = high32bit2 | low32bit;
+
+    uint64_t diff1 = (num1 > checkpoint) ? (num1 - checkpoint) : (checkpoint - num1);
+    uint64_t diff2 = (num2 > checkpoint) ? (num2 - checkpoint) : (checkpoint - num2);
+
+    return (diff1 < diff2) ? num1 : num2;
 }
