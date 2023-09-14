@@ -7,7 +7,10 @@
 #include "wrapping_integers.hh"
 
 #include <functional>
+#include <map>
 #include <queue>
+
+using namespace std;
 
 //! \brief The "sender" part of a TCP implementation.
 
@@ -31,6 +34,25 @@ class TCPSender {
 
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
+
+    //! window size from receiver
+    size_t _last_window_size{1};
+
+    //! flag for setup syn or not
+    bool _set_syn_flag;
+
+    //! flag for setup fin or not
+    bool _set_fin_flag;
+
+    //! flight bytes, sent but not being acked bytes count
+    size_t _outgoing_bytes{0};
+
+    //! flighting segment map (ordered)
+    std::map<size_t, TCPSegment> _outgoing_map{};
+
+    int _timeout{-1};
+    int _timecount{0};
+    size_t _consecutive_retransmissions_count = 0;
 
   public:
     //! Initialize a TCPSender
@@ -66,7 +88,7 @@ class TCPSender {
     //! \brief How many sequence numbers are occupied by segments sent but not yet acknowledged?
     //! \note count is in "sequence space," i.e. SYN and FIN each count for one byte
     //! (see TCPSegment::length_in_sequence_space())
-    size_t bytes_in_flight() const;
+    uint64_t bytes_in_flight() const;
 
     //! \brief Number of consecutive retransmissions that have occurred in a row
     unsigned int consecutive_retransmissions() const;
