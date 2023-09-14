@@ -23,7 +23,7 @@ TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const s
     , _initial_retransmission_timeout{retx_timeout}
     , _stream(capacity)
     , _next_seqno(0)
-    , _last_window_size(0)
+    , _last_window_size(1)
     , _set_syn_flag(false)
     , _set_fin_flag(false)
     , _outgoing_bytes(0)
@@ -47,7 +47,7 @@ void TCPSender::fill_window() {
             std::min(TCPConfig::MAX_PAYLOAD_SIZE, window_size - _outgoing_bytes - segment.header().syn);
 
         string payload = _stream.read(payload_size);
-        if (!_set_fin_flag && _stream.eof() && payload_size + _outgoing_bytes < window_size) {
+        if (!_set_fin_flag && _stream.eof() && payload.size() + _outgoing_bytes < window_size) {
             _set_fin_flag = segment.header().fin = true;
         }
         segment.payload() = Buffer(move(payload));

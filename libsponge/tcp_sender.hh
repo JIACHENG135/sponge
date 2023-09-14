@@ -52,7 +52,7 @@ class TCPSender {
 
     int _timeout{-1};
     int _timecount{0};
-    size_t _consecutive_retransmissions_count{0};
+    size_t _consecutive_retransmissions_count = 0;
 
   public:
     //! Initialize a TCPSender
