@@ -18,6 +18,16 @@ using namespace std;
 //! \param[in] capacity the capacity of the outgoing byte stream
 //! \param[in] retx_timeout the initial amount of time to wait before retransmitting the oldest outstanding segment
 //! \param[in] fixed_isn the Initial Sequence Number to use, if set (otherwise uses a random ISN)
+// segment , _timeout, _timeout * 2, ct + 1,
+// 10ms, 20ms, 40ms,
+
+// unwrap(32,x, checkpint) -> 64 abseqno
+//
+// ackno, window_size,
+// sleep,
+// syn -> sync_sent
+// stream.read() -> stream.eof
+// fin ->
 TCPSender::TCPSender(const size_t capacity, const uint16_t retx_timeout, const std::optional<WrappingInt32> fixed_isn)
     : _isn(fixed_isn.value_or(WrappingInt32{random_device()()}))
     , _initial_retransmission_timeout{retx_timeout}
